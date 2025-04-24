@@ -1,15 +1,5 @@
 import { Webhook } from "svix";
-import mongoose from "mongoose";
-import User from "../server/models/User.js";
-
-// Inline DB connection to ensure it's available in Vercel's serverless
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState === 1) return;
-  await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-};
+import connectDB from "../server/config/db.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -20,6 +10,8 @@ export default async function handler(req, res) {
 
   try {
     await connectDB();
+
+    const { default: User } = await import("../server/models/User.js");
 
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
@@ -36,7 +28,7 @@ export default async function handler(req, res) {
         const userData = {
           _id: data.id,
           email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
+          name: data.first_name + " " + data.last_name,
           image: data.image_url,
           resume: "",
         };
@@ -47,7 +39,7 @@ export default async function handler(req, res) {
       case "user.updated": {
         const userData = {
           email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
+          name: data.first_name + " " + data.last_name,
           image: data.image_url,
         };
         await User.findByIdAndUpdate(data.id, userData);
