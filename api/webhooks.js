@@ -1,18 +1,8 @@
 import { Webhook } from "svix";
 import mongoose from "mongoose";
+import User from "../server/models/User.js";
 
-// Manual schema in case import fails — fallback for simplicity
-const userSchema = new mongoose.Schema({
-  _id: String,
-  email: String,
-  name: String,
-  image: String,
-  resume: String,
-});
-
-const User = mongoose.models.User || mongoose.model("User", userSchema);
-
-// Connect DB inline to prevent import issues
+// Inline DB connection to ensure it's available in Vercel's serverless
 const connectDB = async () => {
   if (mongoose.connections[0].readyState === 1) return;
   await mongoose.connect(process.env.MONGODB_URI, {
