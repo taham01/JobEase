@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mongoose": "^8.13.3",
+    "svix": "^1.64.1"
+  }
+}
