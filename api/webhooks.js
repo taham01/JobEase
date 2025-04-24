@@ -1,5 +1,4 @@
 import { Webhook } from "svix";
-import connectDB from "../server/config/db.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -9,9 +8,11 @@ export default async function handler(req, res) {
   console.log("✅ Webhook hit");
 
   try {
-    await connectDB();
-
+    // ✅ Dynamically import DB and model
+    const { default: connectDB } = await import("../server/config/db.js");
     const { default: User } = await import("../server/models/User.js");
+
+    await connectDB();
 
     const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
