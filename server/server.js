@@ -13,7 +13,5 @@ app.use(express.json());
 app.get("/", (req, res) => res.send("API Running"));
 app.post("/webhooks", clerkWebhooks);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ✅ Export instead of app.listen()
+export default app;
