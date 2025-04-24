@@ -1,27 +1,27 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
-import mongoose from "mongoose";
+import "dotenv/config";
 import connectDB from "./config/db.js";
+import { clerkWebhooks } from "./controllers/webhooks.js";
 
-// Load environment variables from .env file (this should come before using any env vars)
-dotenv.config();
+//Initialize Express
 
-// Check if MongoDB URI is properly formatted
-console.log("MongoDB URI:", process.env.MONGODB_URI);
-//Initialize the express app
 const app = express();
 
-//Connect to MongoDB
+//Connect to DB
 await connectDB();
-
-//Middleware
+//middlewears
 app.use(cors());
+
 app.use(express.json());
 
 //Routes
-app.get("/", (req, res) => res.send("API WORKING"));
 
-//PORT
+app.get("/", (req, res) => res.send("Api Working"));
+app.post("/webhooks", clerkWebhooks);
+
+//Por
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
