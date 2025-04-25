@@ -6,11 +6,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log("✅ Webhook received");
-
-    // Dynamically import connectDB and User model
-    const { default: connectDB } = await import("../server/config/db.js");
-    const { default: User } = await import("../server/models/User.js");
+    // Dynamically import DB and model to avoid ESM require error
+    const { default: connectDB } = await import("../../server/config/db.js");
+    const { default: User } = await import("../../server/models/User.js");
 
     await connectDB();
 
@@ -25,40 +23,32 @@ export default async function handler(req, res) {
     const { data, type } = req.body;
 
     switch (type) {
-      case "user.created": {
-        const userData = {
+      case "user.created":
+        await User.create({
           _id: data.id,
-          email: data.email_addresses?.[0]?.email_address,
+          email: data.email_addresses[0].email_address,
           name: `${data.first_name} ${data.last_name}`,
           image: data.image_url,
           resume: "",
-        };
-        await User.create(userData);
+        });
         break;
-      }
 
-      case "user.updated": {
-        const updatedData = {
-          email: data.email_addresses?.[0]?.email_address,
+      case "user.updated":
+        await User.findByIdAndUpdate(data.id, {
+          email: data.email_addresses[0].email_address,
           name: `${data.first_name} ${data.last_name}`,
           image: data.image_url,
-        };
-        await User.findByIdAndUpdate(data.id, updatedData);
+        });
         break;
-      }
 
-      case "user.deleted": {
+      case "user.deleted":
         await User.findByIdAndDelete(data.id);
-        break;
-      }
-
-      default:
         break;
     }
 
     res.status(200).json({ success: true });
-  } catch (err) {
-    console.error("❌ Webhook error:", err.message);
-    res.status(400).json({ error: err.message });
+  } catch (error) {
+    console.error("❌ Webhook error:", error.message);
+    res.status(400).json({ error: error.message });
   }
 }
