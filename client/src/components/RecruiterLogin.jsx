@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const RecruiterLogin = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState("Login");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +15,8 @@ const RecruiterLogin = () => {
   const [image, setImage] = useState(false);
   const [isTextDataSubmitted, setIsTextDataSubmitted] = useState(false);
 
-  const { setShowRecruiterLogin, backendUrl } = useContext(AppContext);
+  const { setShowRecruiterLogin, backendUrl, setCompanyData, setCompanyToken } =
+    useContext(AppContext);
 
   // This useEffect us used to not let the user scroll when he is in the Recruiter login page
   useEffect(() => {
@@ -40,6 +42,10 @@ const RecruiterLogin = () => {
         });
 
         if (data.success) {
+          console.log("Login successful:", {
+            company: data.company,
+            token: data.token,
+          });
           setCompanyData(data.company);
           setCompanyToken(data.token);
           localStorage.setItem("companyToken", data.token);
