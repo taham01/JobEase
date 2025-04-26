@@ -19,13 +19,18 @@ const jobApplicationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["applied", "reviewed", "accepted", "rejected"],
-    default: "applied",
+    // enum: ["applied", "reviewed", "accepted", "rejected"],
+    default: "Pending",
   },
-  appliedAt: {
-    type: Date,
-    default: Date.now,
+  date: {
+    type: Number,
+    required: true,
   },
+
+  // appliedAt: {
+  //   type: Date,
+  //   default: Date.now,
+  // },
 });
 
 const JobApplication = mongoose.model("JobApplication", jobApplicationSchema);
